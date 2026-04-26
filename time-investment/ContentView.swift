@@ -12,6 +12,8 @@ import AppKit
 import UIKit
 #endif
 
+/// 主导航页签定义。
+/// 使用稳定的英文 rawValue 作为内部标识，避免本地化文案变化影响状态恢复与逻辑判断。
 private enum AuditPage: String, CaseIterable, Identifiable {
     case overview
     case ledger
@@ -64,6 +66,8 @@ struct ContentView: View {
     @State private var reportActionMessage: String?
     @State private var lastExportedURL: URL?
 
+    /// 在根视图初始化时创建并持有各页面 ViewModel。
+    /// 使用 StateObject 保证生命周期稳定，避免页面切换时重复初始化。
     init(container: AppContainer) {
         self.container = container
         _dashboardViewModel = StateObject(wrappedValue: DashboardViewModel(repository: container.repository))
@@ -99,6 +103,7 @@ struct ContentView: View {
             reportDetailSheet(report: report)
         }
         .onAppear {
+            // 首次进入时完成基础数据与服务准备。
             container.reloadRecords()
             container.reloadReports()
             dashboardViewModel.refresh(with: container.todaySummary)
@@ -108,6 +113,7 @@ struct ContentView: View {
             dashboardViewModel.refresh(with: container.todaySummary)
         }
         .onChange(of: scenePhase) { _, phase in
+            // 场景切换时同步追踪状态，减少后台无效采样与权限噪声。
             if phase == .active {
                 container.startTrackingIfNeeded()
             } else if phase == .background {
@@ -197,6 +203,7 @@ struct ContentView: View {
 
     @ViewBuilder
     private var pageContent: some View {
+        // 页面切换仅负责“组装依赖 + 回调”，核心业务逻辑仍留在容器和 ViewModel。
         switch selectedPage {
         case .overview:
             OverviewPageView(
@@ -275,6 +282,7 @@ struct ContentView: View {
     }
 
     private func weeklySummary() -> WeeklySummary {
+        // 统计窗口固定为“最近 7 天”，与页面设计及报告口径保持一致。
         let oneWeekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
         let weeklyRecords = container.records.filter { $0.startTime >= oneWeekAgo }
         return ValueCalculator.weeklySummary(for: weeklyRecords, baselineHourlyRate: container.settings.hourlyRate)
@@ -285,6 +293,7 @@ struct ContentView: View {
     }
 
     private func customRangeRecords() -> [TimeRecord] {
+        // 用户可能输入反向区间，这里统一归一化后再过滤，保证导出稳定。
         let start = Calendar.current.startOfDay(for: min(rangeStart, rangeEnd))
         let endDate = max(rangeStart, rangeEnd)
         let end = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: endDate)) ?? endDate
@@ -294,6 +303,7 @@ struct ContentView: View {
     private func exportCustomRangeMarkdown() {
         let records = customRangeRecords()
         do {
+            // 直接导出到临时目录，减少用户首次配置路径的摩擦。
             let fileURL = try ExportService.saveMarkdownToTemp(
                 records: records,
                 hourlyRate: container.settings.hourlyRate,
@@ -315,6 +325,7 @@ struct ContentView: View {
     }
 
     private func reportDetailSheet(report: InvestmentReport) -> some View {
+        // 报告详情以 Sheet 呈现，保持主界面上下文连续，不打断筛选与浏览流程。
         NavigationStack {
             ScrollView {
                 Text(report.content)
@@ -355,6 +366,7 @@ struct ContentView: View {
 
     private func openInSystem(_ url: URL) {
 #if os(macOS)
+        // macOS 使用 Finder 定位导出文件，便于后续二次分享或归档。
         NSWorkspace.shared.activateFileViewerSelecting([url])
 #elseif os(iOS)
         UIApplication.shared.open(url)

@@ -5,6 +5,8 @@ import AppKit
 import ApplicationServices
 #endif
 
+/// 一次采样结果：前台应用 + （可选）浏览器 URL。
+/// URL 只在可识别浏览器中尝试读取。
 struct TrackingSample {
     var appName: String?
     var bundleIdentifier: String?
@@ -20,6 +22,7 @@ final class TrackingService {
 
     func start() {
 #if os(macOS)
+        // 自动追踪依赖 Accessibility 能力；未授权直接返回并抛出可展示错误。
         guard AXIsProcessTrusted() else {
             onError?(String(localized: "tracking.error.accessibilityNotGranted"))
             return
@@ -41,6 +44,7 @@ final class TrackingService {
 
     private func sampleForegroundApplication() {
 #if os(macOS)
+        // 每次采样读取当前前台应用，并按 bundleId 决定是否附带 URL。
         let app = NSWorkspace.shared.frontmostApplication
         let sample = TrackingSample(
             appName: app?.localizedName,
@@ -56,6 +60,7 @@ final class TrackingService {
 #if os(macOS)
     private func browserURL(forBundleIdentifier bundleIdentifier: String?) -> String? {
         guard let bundleIdentifier else { return nil }
+        // 通过 AppleScript 走“最小可用采集”策略：能拿 URL 就拿 URL，拿不到则回退/返回 nil。
         switch bundleIdentifier {
         case "com.apple.Safari":
             return runAppleScript("""
@@ -72,6 +77,7 @@ final class TrackingService {
             end tell
             """)
         case "org.mozilla.firefox":
+            // Firefox 优先尝试 active tab URL，失败后回退窗口标题，避免彻底丢失上下文。
             if let url = runAppleScript("""
             tell application "Firefox"
                 if (count of windows) = 0 then return ""
@@ -120,6 +126,7 @@ final class TrackingService {
             )
             return nil
         }
+        // 统一做空白裁剪，避免把空字符串当作有效 URL。
         let value = result.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines)
         if value?.isEmpty == true { return nil }
         return value

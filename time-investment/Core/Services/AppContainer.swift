@@ -1,6 +1,8 @@
 import Foundation
 import Combine
 
+/// Pro 功能门禁点。
+/// 统一在容器层做授权判断，避免页面和服务层重复编码会员逻辑。
 enum ProFeature {
     case browserTracking
     case advancedExport
@@ -30,6 +32,8 @@ final class AppContainer: ObservableObject {
     private var manualTrackingStartAt: Date?
     private var manualTrackingCategory: RecordCategory?
 
+    /// 应用级依赖注入入口。
+    /// 默认提供可运行实现，同时保留测试替身注入能力。
     init(
         repository: TimeRecordRepository = CoreDataTimeRecordRepository(),
         trackingService: TrackingService = TrackingService(),
@@ -60,6 +64,7 @@ final class AppContainer: ObservableObject {
     }
 
     func reloadRecords() {
+        // 容器统一维护“全量记录 + 今日汇总”，页面只消费派生状态。
         records = repository.fetchAll()
         let todayRecords = records.filter { Calendar.current.isDateInToday($0.startTime) }
         todaySummary = ValueCalculator.dailySummary(for: todayRecords)
@@ -70,6 +75,7 @@ final class AppContainer: ObservableObject {
     }
 
     func startTrackingIfNeeded() {
+        // 自动追踪受“开关 + 系统权限”双重约束。
         guard settings.autoTrackingEnabled else {
             trackingStatusText = String(localized: "tracking.status.idle")
             trackingWarning = nil
@@ -95,6 +101,7 @@ final class AppContainer: ObservableObject {
     }
 
     func saveSettings(_ newSettings: UserSettings) {
+        // 保存设置后立即驱动追踪状态切换，保证行为与用户预期一致。
         settings = newSettings
         settingsStore.save(newSettings)
         subscriptionService.updateTier(newSettings.subscriptionTier)
@@ -106,6 +113,7 @@ final class AppContainer: ObservableObject {
     }
 
     func canUse(_ feature: ProFeature) -> Bool {
+        // 先走全局 Pro 快路径，减少后续 feature 分支判断。
         if settings.isPro { return true }
         switch feature {
         case .browserTracking, .advancedExport, .reports:
@@ -128,6 +136,7 @@ final class AppContainer: ObservableObject {
     func stopManualTracking(note: String = "") {
         guard let start = manualTrackingStartAt, let category = manualTrackingCategory else { return }
         let end = Date()
+        // 过滤误触：小于 5 秒的手动计时不落库。
         guard end.timeIntervalSince(start) >= 5 else {
             manualTrackingStartAt = nil
             manualTrackingCategory = nil
@@ -198,6 +207,7 @@ final class AppContainer: ObservableObject {
     }
 
     private func setupTrackingPipeline() {
+        // TrackingService 回调可能来自 Timer；统一跳回主线程更新 UI 状态。
         trackingService.onSample = { [weak self] sample in
             Task { @MainActor in
                 self?.handleTrackingSample(sample: sample)
@@ -215,6 +225,7 @@ final class AppContainer: ObservableObject {
         guard settings.autoTrackingEnabled else { return }
         guard let appName = sample.appName, !appName.isEmpty else { return }
         let isBrowser = sample.websiteURL != nil
+        // 浏览器 URL 采样属于 Pro 能力，且受用户细分开关控制。
         if isBrowser && !canUse(.browserTracking) { return }
         if isBrowser && !settings.trackBrowsers { return }
         if !isBrowser && !settings.trackApps { return }
@@ -236,6 +247,7 @@ final class AppContainer: ObservableObject {
         }
 
         guard currentTrackedApp != appName || currentTrackedURL != sample.websiteURL else { return }
+        // 前台上下文变化时先结算上一段，再开启新段，形成自然切片。
         finalizeCurrentTrack()
         currentTrackedApp = appName
         currentTrackedURL = sample.websiteURL
@@ -246,6 +258,7 @@ final class AppContainer: ObservableObject {
     private func finalizeCurrentTrack() {
         guard let app = currentTrackedApp, let start = trackingStartAt else { return }
         let end = Date()
+        // 与手动计时一致，忽略短抖动采样。
         guard end.timeIntervalSince(start) >= 5 else { return }
 
         let record = TimeRecord(
@@ -278,6 +291,7 @@ final class AppContainer: ObservableObject {
     }
 
     private func appendTrackingError(_ message: String) {
+        // 错误列表仅保留最近 5 条，保证侧边提示可读性。
         let timestamp = Date().formatted(date: .omitted, time: .standard)
         recentTrackingErrors.insert("[\(timestamp)] \(message)", at: 0)
         if recentTrackingErrors.count > 5 {

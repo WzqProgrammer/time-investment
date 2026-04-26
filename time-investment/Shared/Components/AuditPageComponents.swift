@@ -1,5 +1,8 @@
 import SwiftUI
 
+/// 搜索/筛选控件的数据模型：
+/// - value: 内部稳定值（不随语言变化）
+/// - title: 对用户展示的本地化文案
 struct AuditFilterOption: Identifiable {
     let value: String
     let title: LocalizedStringKey
@@ -22,6 +25,7 @@ struct AuditSplitLayout<Left: View, Right: View>: View {
     }
 
     var body: some View {
+        // 通用双栏布局：左侧主内容自适应，右侧固定宽度信息面板。
         HStack(alignment: .top, spacing: AuditTheme.cardGap) {
             left
                 .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -48,6 +52,7 @@ struct AuditSearchControlBar<Trailing: View>: View {
                     .textFieldStyle(.plain)
                     .frame(height: 34)
                 Picker(String(localized: "common.filter"), selection: $filter) {
+                    // 过滤项值使用 value 绑定，标题仅用于显示，避免多语言导致逻辑漂移。
                     ForEach(filters) { item in
                         Text(item.title).tag(item.value)
                     }
@@ -66,6 +71,7 @@ struct AuditStatRow: View {
     let value: String
 
     var body: some View {
+        // 统一“左标题-右数值”排版，减少各页面重复样式代码。
         HStack {
             Text(title).foregroundStyle(AuditTheme.textSecondary)
             Spacer()

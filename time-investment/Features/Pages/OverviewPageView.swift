@@ -1,5 +1,7 @@
 import SwiftUI
 
+/// 今日概览页：聚合展示“价值结果 + 时间投入 + 最近记录”。
+/// 本页只消费外部传入的数据，不直接改写业务状态。
 struct OverviewPageView: View {
     let roi: Double
     let totalValue: Double
@@ -12,6 +14,7 @@ struct OverviewPageView: View {
                 AuditHeader(title: AuditCopy.Overview.title, subtitle: AuditCopy.Overview.subtitle)
                 HStack(alignment: .top, spacing: AuditTheme.cardGap) {
                     AuditCard {
+                        // 左卡：展示“收益率 + 绝对价值”两个最关键经营指标。
                         VStack(alignment: .leading, spacing: 16) {
                             Text(AuditCopy.Overview.roiLabel)
                                 .font(.headline)
@@ -31,6 +34,7 @@ struct OverviewPageView: View {
                     }
 
                     AuditCard {
+                        // 右卡：将今日总时长映射到固定目标（10h）进度，便于快速判断投入强度。
                         VStack(spacing: 12) {
                             CircleGaugeView(
                                 progress: min(1, totalSeconds / 36000),
@@ -46,6 +50,7 @@ struct OverviewPageView: View {
                 }
 
                 RecordTableCard(records: Array(records.prefix(6)))
+                // 只展示最近 6 条，保证概览页信息密度可控；完整流水在账本页查看。
             }
             .padding(AuditTheme.pagePadding)
         }

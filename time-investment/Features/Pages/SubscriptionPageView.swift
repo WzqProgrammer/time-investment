@@ -1,5 +1,7 @@
 import SwiftUI
 
+/// 订阅中心页：管理会员档位与报告语气偏好。
+/// 语气配置会影响报告建议文案前缀，不改变核心计算结果。
 struct SubscriptionPageView: View {
     @Binding var tier: SubscriptionTier
     @Binding var tone: AdviceTone
@@ -10,6 +12,7 @@ struct SubscriptionPageView: View {
             VStack(alignment: .leading, spacing: AuditTheme.sectionGap) {
                 AuditHeader(title: AuditCopy.Subscription.title, subtitle: AuditCopy.Subscription.subtitle)
                 AuditCard {
+                    // 会员计划切换（free / pro）。
                     HStack {
                         Text(AuditCopy.Subscription.currentPlan)
                         Spacer()
@@ -22,6 +25,7 @@ struct SubscriptionPageView: View {
                     }
                 }
                 AuditCard {
+                    // 建议语气切换（顾问 / 教练 / 中性）。
                     HStack {
                         Text(AuditCopy.Subscription.toneLabel)
                         Spacer()

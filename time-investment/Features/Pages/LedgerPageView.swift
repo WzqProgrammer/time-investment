@@ -1,5 +1,7 @@
 import SwiftUI
 
+/// 审计账本页：负责“状态可见 + 手动补录 + 流水查看”三件事。
+/// 自动追踪异常时，用户可通过手动计时兜底完成记录闭环。
 struct LedgerPageView: View {
     let trackingStatusText: String
     let trackingWarning: String?
@@ -18,10 +20,12 @@ struct LedgerPageView: View {
             VStack(alignment: .leading, spacing: AuditTheme.sectionGap) {
                 AuditHeader(title: AuditCopy.Ledger.title, subtitle: AuditCopy.Ledger.subtitle)
                 AuditCard {
+                    // 追踪状态卡：实时展示当前状态、持续时长、警告与最近错误。
                     VStack(alignment: .leading, spacing: 6) {
                         Text(trackingStatusText)
                             .font(.subheadline.weight(.medium))
                         if let start = trackingActiveSince {
+                            // 每秒刷新一次，仅用于显示层；不影响底层记录落库节奏。
                             TimelineView(.periodic(from: .now, by: 1)) { _ in
                                 Text("\(String(localized: AuditCopy.Ledger.durationPrefix))\(durationText(since: start))")
                                     .font(.footnote)
@@ -45,6 +49,7 @@ struct LedgerPageView: View {
                 }
 
                 HStack {
+                    // 操作区：分类 + 备注 + 快捷补录 + 手动计时启停。
                     Picker(AuditCopy.Ledger.categoryPicker, selection: Binding(get: { selectedCategory }, set: onSelectCategory)) {
                         ForEach(RecordCategory.allCases) { cat in
                             Text(cat.rawValue).tag(cat)
@@ -67,6 +72,7 @@ struct LedgerPageView: View {
     }
 
     private func durationText(since date: Date) -> String {
+        // 将秒数格式化为 HH:mm:ss，供状态卡直观显示。
         let seconds = max(0, Int(Date().timeIntervalSince(date)))
         return String(format: "%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60)
     }

@@ -1,5 +1,7 @@
 import SwiftUI
 
+/// 报告中心页：负责报告生成入口、筛选检索、打开/导出/删除操作。
+/// 报告数据由上层注入，页面只负责交互编排与显示。
 struct ReportsPageView: View {
     let canUseReports: Bool
     let reports: [InvestmentReport]
@@ -20,10 +22,12 @@ struct ReportsPageView: View {
                 AuditHeader(title: AuditCopy.Reports.title, subtitle: AuditCopy.Reports.subtitle)
                 AuditSplitLayout(rightWidth: AuditMetrics.reportPanelWidth) {
                     VStack(alignment: .leading, spacing: AuditTheme.cardGap) {
+                        // 左侧主区：筛选控制 + 报告列表。
                         controlBar
                         reportList
                     }
                 } right: {
+                    // 右侧洞察：基于当前筛选结果实时计算统计。
                     ReportInsightPanel(
                         total: filteredReports.count,
                         weekly: filteredReports.filter { $0.type == .weekly }.count,
@@ -51,6 +55,7 @@ struct ReportsPageView: View {
             filters: AuditCopy.Reports.filterOptions
         ) {
             if canUseReports {
+                // 周报/月报生成入口仅在具备权限时显示。
                 Button(AuditCopy.Reports.createWeekly, action: onCreateWeekly)
                     .buttonStyle(AuditPrimaryButtonStyle())
                 Button(AuditCopy.Reports.createMonthly, action: onCreateMonthly)
@@ -82,10 +87,12 @@ struct ReportsPageView: View {
                 }
             }
         }
+        // 筛选结果变化时添加柔和过渡，降低大量列表项切换的割裂感。
         .animation(.easeInOut(duration: AuditTheme.motionStandard), value: filteredReports.map(\.id))
     }
 
     private var filteredReports: [InvestmentReport] {
+        // 过滤流水线：先按类型，再按标题/内容关键词匹配。
         reports.filter { report in
             let matchType: Bool
             switch typeFilter {
@@ -120,6 +127,7 @@ private struct ReportInsightPanel: View {
             }
             AuditCard {
                 VStack(spacing: 10) {
+                    // 周报占比环形图，直观反馈当前报告存储结构。
                     CircleGaugeView(
                         progress: total == 0 ? 0 : Double(weekly) / Double(total),
                         centerText: "\(total == 0 ? 0 : Int((Double(weekly) / Double(total)) * 100))%",

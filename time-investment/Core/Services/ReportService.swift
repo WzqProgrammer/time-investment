@@ -1,7 +1,10 @@
 import Foundation
 
+/// 报告生成服务。
+/// 当前以纯函数方式输出 Markdown，便于测试与导出复用。
 enum ReportService {
     static func weeklyReportMarkdown(records: [TimeRecord], hourlyRate: Double, tone: AdviceTone = .advisor) -> String {
+        // 周报/月报共用同一套聚合模型，区别主要在标题与时间范围来源。
         let summary = ValueCalculator.weeklySummary(for: records, baselineHourlyRate: hourlyRate)
         return """
         # \(String(localized: "report.title.weekly"))
@@ -36,6 +39,7 @@ enum ReportService {
     }
 
     private static func categorySection(summary: WeeklySummary) -> String {
+        // total 至少取 1，避免极端场景下出现除零。
         let total = max(1, summary.totalSeconds)
         return RecordCategory.allCases.compactMap { category in
             let seconds = summary.categorySeconds[category, default: 0]
@@ -50,6 +54,7 @@ enum ReportService {
     }
 
     private static func investmentAdvice(summary: WeeklySummary, tone: AdviceTone) -> String {
+        // 建议生成策略：先看 ROI，再看结构（娱乐占比），最后看总投入时长。
         var advice: [String] = []
         if summary.roi >= 0.5 {
             advice.append(prefix(tone) + String(localized: "report.advice.highROI"))

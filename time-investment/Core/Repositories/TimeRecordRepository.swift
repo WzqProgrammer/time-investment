@@ -1,6 +1,8 @@
 import Foundation
 import CoreData
 
+/// 时间记录仓储协议。
+/// 通过统一接口屏蔽存储实现差异（内存 / Core Data）。
 protocol TimeRecordRepository {
     func fetchAll() -> [TimeRecord]
     func save(_ record: TimeRecord)
@@ -34,6 +36,7 @@ final class InMemoryTimeRecordRepository: TimeRecordRepository {
     }
 
     func observeChanges(_ handler: @escaping () -> Void) {
+        // 观察者以 UUID 作为 token 存储，便于后续扩展移除能力。
         observers[UUID()] = handler
     }
 
@@ -62,6 +65,10 @@ final class CoreDataTimeRecordRepository: TimeRecordRepository {
     private(set) var storageWarningMessage: String?
     private var observers: [UUID: () -> Void] = [:]
 
+    /// Core Data 初始化策略：
+    /// 1) 优先真实持久化；
+    /// 2) 失败时降级到 in-memory，保证应用可继续运行；
+    /// 3) 再失败则标记不可用并提示告警。
     init(inMemory: Bool = false) {
         let model = Self.makeModel()
         do {
@@ -141,6 +148,7 @@ final class CoreDataTimeRecordRepository: TimeRecordRepository {
             try container.viewContext.save()
             notifyObservers()
         } catch {
+            // 失败时回滚，防止脏状态继续污染上下文。
             container.viewContext.rollback()
         }
     }
@@ -163,6 +171,7 @@ final class CoreDataTimeRecordRepository: TimeRecordRepository {
     }
 
     private static func makeModel() -> NSManagedObjectModel {
+        // 采用编程方式建模，避免早期阶段对 .xcdatamodeld 文件的强依赖。
         let model = NSManagedObjectModel()
         let entity = NSEntityDescription()
         entity.name = "CDTimeRecord"
@@ -211,6 +220,7 @@ final class CoreDataTimeRecordRepository: TimeRecordRepository {
         }
 
         let timeout = semaphore.wait(timeout: .now() + 5)
+        // 对持久化加载设置超时保护，规避极端环境下主线程长时间卡死。
         if timeout == .timedOut {
             throw ContainerBuildError.loadTimedOut
         }

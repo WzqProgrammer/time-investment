@@ -1,5 +1,7 @@
 import SwiftUI
 
+/// 通用记录表格卡片：
+/// 在概览页与账本页复用，统一展示“时间-分类-时长-价值”四列。
 struct RecordTableCard: View {
     let records: [TimeRecord]
 
@@ -16,6 +18,7 @@ struct RecordTableCard: View {
                 }
 
                 Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 8) {
+                    // 表头
                     GridRow {
                         Text(AuditCopy.Table.timeColumn).foregroundStyle(AuditTheme.textSecondary).font(.caption)
                         Text(AuditCopy.Table.categoryColumn).foregroundStyle(AuditTheme.textSecondary).font(.caption)
@@ -23,6 +26,7 @@ struct RecordTableCard: View {
                         Text(AuditCopy.Table.valueColumn).foregroundStyle(AuditTheme.textSecondary).font(.caption)
                     }
                     ForEach(records) { record in
+                        // 每条记录对应一行，行内自行计算并格式化价值金额。
                         RecordGridRow(record: record)
                     }
                 }
@@ -52,6 +56,7 @@ private struct RecordGridRow: View {
                 .font(.subheadline.bold())
                 .foregroundStyle(value >= 0 ? AuditTheme.green : AuditTheme.red)
         }
+        // hover 反馈用于增强桌面端可点击感和审计“行扫描”体验。
         .padding(.vertical, 6)
         .background(
             RoundedRectangle(cornerRadius: 8)
