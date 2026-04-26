@@ -1,0 +1,136 @@
+"overview.title" = "Overview";
+"overview.subtitle" = "AUDIT CYCLE : TODAY";
+"overview.roi.label" = "Daily ROI";
+"overview.roi.hint" = "Your time asset efficiency is steadily improving. Keep high-value activities in focus.";
+"overview.gauge.caption" = "Remaining Time Budget";
+"overview.gauge.title" = "Time Asset Value";
+
+"analytics.title" = "Analytics";
+"analytics.subtitle" = "Efficiency insights based on audit results";
+"analytics.category.title" = "Category ROI Distribution";
+"analytics.category.main" = "Primary Category";
+"analytics.trend.title" = "7-Day Efficiency Trend";
+"analytics.export.title" = "Export Configuration";
+"analytics.export.rangeStart" = "Start Date";
+"analytics.export.rangeEnd" = "End Date";
+"analytics.export.includeAppName" = "App Name";
+"analytics.export.includeURL" = "Visited URL";
+"analytics.export.includeNote" = "Audit Note";
+"analytics.export.includeSource" = "Source";
+"analytics.export.generate" = "Generate Audit Report";
+
+"reports.title" = "Reports";
+"reports.subtitle" = "Audit your liquidity and time-value output in real time";
+"reports.search.placeholder" = "Search reports...";
+"reports.filter.all" = "All";
+"reports.filter.weekly" = "Weekly";
+"reports.filter.monthly" = "Monthly";
+"reports.action.createWeekly" = "Create Weekly Report";
+"reports.action.createMonthly" = "Create Monthly Report";
+"reports.action.openExportFile" = "Open Exported File in System";
+"reports.action.open" = "Open";
+"reports.action.export" = "Export";
+"reports.action.delete" = "Delete";
+"reports.stats.title" = "Report Stats";
+"reports.stats.total" = "Total Reports";
+"reports.stats.weekly" = "Weekly";
+"reports.stats.monthly" = "Monthly";
+"reports.storage.title" = "Storage Ratio";
+"reports.storage.note" = "Estimated by weekly report volume";
+"reports.storage.weeklyRatio" = "Weekly Ratio";
+
+"content.nav.overview" = "Overview";
+"content.nav.ledger" = "Ledger";
+"content.nav.analytics" = "Analytics";
+"content.nav.reports" = "Reports";
+"content.nav.subscription" = "Subscription";
+"content.nav.settings" = "Settings";
+"content.topbar.search.placeholder" = "Search audited items or assets...";
+"content.export.customRange.title" = "Time Investment Range Report";
+"content.export.success" = "Export succeeded: %@";
+"content.export.failure" = "Export failed: %@";
+"content.report.copied" = "Report content copied.";
+"content.toolbar.copy" = "Copy";
+"content.toolbar.export" = "Export";
+
+"ledger.title" = "Ledger";
+"ledger.subtitle" = "CURRENT AUDIT SESSION";
+"ledger.duration.prefix" = "Duration: ";
+"ledger.category.picker" = "Category";
+"ledger.note.placeholder" = "Note (optional)";
+"ledger.action.addThirtyMinutes" = "Add 30-Min Record";
+"ledger.action.startManual" = "Start Manual Timer";
+"ledger.action.stopAndSave" = "Stop and Save";
+
+"subscription.title" = "Subscription";
+"subscription.subtitle" = "Manage plans and report preferences";
+"subscription.currentPlan" = "Current Plan";
+"subscription.plan.picker" = "Plan";
+"subscription.plan.free" = "Free";
+"subscription.plan.pro" = "Professional";
+"subscription.tone.label" = "Advice Tone";
+"subscription.tone.picker" = "Tone";
+"subscription.tone.advisor" = "Advisor";
+"subscription.tone.coach" = "Coach";
+"subscription.tone.neutral" = "Neutral";
+"subscription.save" = "Save Settings";
+
+"settings.title" = "Value Settings";
+"settings.subtitle" = "Define your time asset pricing strategy";
+"settings.pricing.title" = "Time Asset Pricing";
+"settings.pricing.hourlyRatePlaceholder" = "Hourly Rate";
+"settings.toggle.autoTrack" = "Enable Auto Tracking";
+"settings.toggle.trackApps" = "Track App Usage";
+"settings.toggle.trackBrowsers" = "Track Web Browsing";
+"settings.saveAgreement" = "Save Audit Agreement";
+
+"table.ledger.title" = "Audit Ledger";
+"table.ledger.viewAll" = "View Full Ledger";
+"table.column.time" = "Audit Time";
+"table.column.category" = "Category";
+"table.column.duration" = "Duration";
+"table.column.value" = "Value Delta";
+
+"common.filter" = "Filter";
+
+"tracking.status.idle" = "Auto tracking is idle";
+"tracking.status.running" = "Auto tracking is running";
+"tracking.status.startFailed" = "Failed to start auto tracking";
+"tracking.status.stopped" = "Auto tracking stopped";
+"tracking.warning.permission" = "Please enable Accessibility permission in System Settings and try again.";
+"tracking.error.startFailedNoPermission" = "Failed to start auto tracking: permission not granted.";
+"tracking.status.manualRunning" = "Manual timing: %@";
+"tracking.note.manual" = "Manual timing";
+"tracking.status.manualSaved" = "Manual timing saved";
+"tracking.status.appOnly" = "Tracking: %@";
+"tracking.status.appAndURL" = "Tracking: %@ · %@";
+"tracking.note.autoApp" = "Auto tracking: %@";
+"tracking.note.autoAppURL" = "Auto tracking: %@ · %@";
+"tracking.error.accessibilityNotGranted" = "Accessibility permission is not granted. Auto tracking cannot start.";
+"tracking.error.appleScript" = "AppleScript execution failed: %@";
+
+"report.title.weekly" = "Weekly Time Investment Report";
+"report.title.monthly" = "Monthly Time Investment Report";
+"report.metric.totalValue" = "Total Value";
+"report.metric.totalHours" = "Total Hours";
+"report.unit.hours" = "hours";
+"report.section.category" = "Category Distribution";
+"report.section.advice" = "Investment Advice";
+"report.advice.highROI" = "Your time investment ROI is excellent. Keep the current high-value task allocation.";
+"report.advice.positiveROI" = "Your ROI is positive. Move 10%% of entertainment time to study or work tasks.";
+"report.advice.negativeROI" = "ROI is negative this period. Optimize the first two hours of each day with high-efficiency categories.";
+"report.advice.entertainmentHeavy" = "Entertainment time exceeds study + work. Set an entertainment cap and add measurable output tasks.";
+"report.advice.lowRecordedHours" = "Recorded hours are relatively low. Stabilize logging habits before further ROI optimization.";
+"report.tonePrefix.advisor" = "- [Advisor] ";
+"report.tonePrefix.coach" = "- [Coach] ";
+"report.tonePrefix.neutral" = "- ";
+
+"export.title.default" = "Time Investment Report";
+
+"storage.warning.fallbackToMemory" = "Persistent store failed to load. Switched to temporary in-memory storage; data may be lost after restart.";
+"storage.warning.initFailed" = "Storage initialization failed. Data cannot be written currently.";
+
+"menubar.todayValue" = "Today's Time Value: ¥%.2f";
+"menubar.todayHours" = "Today's Duration: %.1f hours";
+"menubar.stopAutoTracking" = "Stop Auto Tracking";
+"menubar.startAutoTracking" = "Start Auto Tracking";

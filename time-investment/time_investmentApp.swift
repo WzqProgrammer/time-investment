@@ -22,10 +22,26 @@ struct time_investmentApp: App {
             systemImage: "clock.badge.checkmark"
         ) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("今日时间价值：¥\(container.todaySummary.totalValue, specifier: "%.2f")")
-                Text("今日时长：\(container.todaySummary.totalSeconds / 3600, specifier: "%.1f") 小时")
+                Text(
+                    String(
+                        format: String(localized: "menubar.todayValue"),
+                        locale: Locale.current,
+                        container.todaySummary.totalValue
+                    )
+                )
+                Text(
+                    String(
+                        format: String(localized: "menubar.todayHours"),
+                        locale: Locale.current,
+                        container.todaySummary.totalSeconds / 3600
+                    )
+                )
                 Divider()
-                Button(container.settings.autoTrackingEnabled ? "停止自动追踪" : "启动自动追踪") {
+                Button(
+                    container.settings.autoTrackingEnabled
+                        ? String(localized: "menubar.stopAutoTracking")
+                        : String(localized: "menubar.startAutoTracking")
+                ) {
                     var settings = container.settings
                     settings.autoTrackingEnabled.toggle()
                     container.saveSettings(settings)

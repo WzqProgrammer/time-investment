@@ -73,12 +73,12 @@ final class CoreDataTimeRecordRepository: TimeRecordRepository {
             if let fallback = try? Self.buildContainer(model: model, inMemory: true) {
                 container = fallback
                 isStorageReady = true
-                storageWarningMessage = "持久化存储加载失败，已降级为临时内存存储，重启后数据可能丢失。"
+                storageWarningMessage = String(localized: "storage.warning.fallbackToMemory")
                 print("Core Data store failed, fallback to in-memory: \(error)")
             } else {
                 container = NSPersistentContainer(name: "TimeInvestmentModel", managedObjectModel: model)
                 isStorageReady = false
-                storageWarningMessage = "存储系统初始化失败，当前不可写入数据。"
+                storageWarningMessage = String(localized: "storage.warning.initFailed")
                 print("Core Data and fallback store both failed: \(error)")
             }
         }

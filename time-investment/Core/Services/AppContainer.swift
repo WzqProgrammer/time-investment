@@ -19,7 +19,7 @@ final class AppContainer: ObservableObject {
     @Published private(set) var todaySummary = DailySummary(totalSeconds: 0, totalValue: 0, highValueSeconds: 0)
     @Published private(set) var reports: [InvestmentReport] = []
     @Published private(set) var storageWarning: String?
-    @Published private(set) var trackingStatusText: String = "自动追踪未启动"
+    @Published private(set) var trackingStatusText: String = String(localized: "tracking.status.idle")
     @Published private(set) var trackingWarning: String?
     @Published private(set) var trackingActiveSince: Date?
     @Published private(set) var recentTrackingErrors: [String] = []
@@ -71,25 +71,25 @@ final class AppContainer: ObservableObject {
 
     func startTrackingIfNeeded() {
         guard settings.autoTrackingEnabled else {
-            trackingStatusText = "自动追踪未启动"
+            trackingStatusText = String(localized: "tracking.status.idle")
             trackingWarning = nil
             return
         }
         trackingService.start()
         if trackingService.isTracking {
-            trackingStatusText = "自动追踪运行中"
+            trackingStatusText = String(localized: "tracking.status.running")
             trackingWarning = nil
         } else {
-            trackingStatusText = "自动追踪启动失败"
-            trackingWarning = "请在系统设置中开启辅助功能权限后重试。"
-            appendTrackingError("自动追踪启动失败：未检测到权限。")
+            trackingStatusText = String(localized: "tracking.status.startFailed")
+            trackingWarning = String(localized: "tracking.warning.permission")
+            appendTrackingError(String(localized: "tracking.error.startFailedNoPermission"))
         }
     }
 
     func stopTracking() {
         finalizeCurrentTrack()
         trackingService.stop()
-        trackingStatusText = "自动追踪已停止"
+        trackingStatusText = String(localized: "tracking.status.stopped")
         trackingWarning = nil
         trackingActiveSince = nil
     }
@@ -118,7 +118,11 @@ final class AppContainer: ObservableObject {
         manualTrackingStartAt = Date()
         manualTrackingCategory = category
         trackingActiveSince = manualTrackingStartAt
-        trackingStatusText = "手动计时中：\(category.rawValue)"
+        trackingStatusText = String(
+            format: String(localized: "tracking.status.manualRunning"),
+            locale: Locale.current,
+            category.rawValue
+        )
     }
 
     func stopManualTracking(note: String = "") {
@@ -136,7 +140,7 @@ final class AppContainer: ObservableObject {
             category: category,
             appName: nil,
             websiteURL: nil,
-            note: note.isEmpty ? "手动计时" : note,
+            note: note.isEmpty ? String(localized: "tracking.note.manual") : note,
             hourlyRateSnapshot: settings.hourlyRate,
             efficiencyScore: settings.efficiency(for: category),
             source: "manual-timer"
@@ -145,7 +149,7 @@ final class AppContainer: ObservableObject {
         manualTrackingStartAt = nil
         manualTrackingCategory = nil
         trackingActiveSince = nil
-        trackingStatusText = "手动计时已保存"
+        trackingStatusText = String(localized: "tracking.status.manualSaved")
     }
 
     func createWeeklyReport() {
@@ -161,7 +165,7 @@ final class AppContainer: ObservableObject {
             id: UUID(),
             createdAt: Date(),
             type: .weekly,
-            title: "时间投资周报",
+            title: String(localized: "report.title.weekly"),
             content: content
         )
         reportRepository.save(report)
@@ -181,7 +185,7 @@ final class AppContainer: ObservableObject {
             id: UUID(),
             createdAt: Date(),
             type: .monthly,
-            title: "时间投资月报",
+            title: String(localized: "report.title.monthly"),
             content: content
         )
         reportRepository.save(report)
@@ -221,8 +225,13 @@ final class AppContainer: ObservableObject {
             trackingStartAt = Date()
             trackingActiveSince = trackingStartAt
             trackingStatusText = sample.websiteURL == nil
-                ? "追踪中：\(appName)"
-                : "追踪中：\(appName) · \(sample.websiteURL ?? "")"
+                ? String(format: String(localized: "tracking.status.appOnly"), locale: Locale.current, appName)
+                : String(
+                    format: String(localized: "tracking.status.appAndURL"),
+                    locale: Locale.current,
+                    appName,
+                    sample.websiteURL ?? ""
+                )
             return
         }
 
@@ -246,7 +255,14 @@ final class AppContainer: ObservableObject {
             category: settings.defaultCategory,
             appName: app,
             websiteURL: currentTrackedURL,
-            note: currentTrackedURL == nil ? "自动追踪：\(app)" : "自动追踪：\(app) · \(currentTrackedURL ?? "")",
+            note: currentTrackedURL == nil
+                ? String(format: String(localized: "tracking.note.autoApp"), locale: Locale.current, app)
+                : String(
+                    format: String(localized: "tracking.note.autoAppURL"),
+                    locale: Locale.current,
+                    app,
+                    currentTrackedURL ?? ""
+                ),
             hourlyRateSnapshot: settings.hourlyRate,
             efficiencyScore: settings.efficiency(for: settings.defaultCategory),
             source: "auto"
@@ -256,7 +272,9 @@ final class AppContainer: ObservableObject {
         currentTrackedURL = nil
         trackingStartAt = nil
         trackingActiveSince = nil
-        trackingStatusText = trackingService.isTracking ? "自动追踪运行中" : "自动追踪已停止"
+        trackingStatusText = trackingService.isTracking
+            ? String(localized: "tracking.status.running")
+            : String(localized: "tracking.status.stopped")
     }
 
     private func appendTrackingError(_ message: String) {

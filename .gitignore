@@ -82,3 +82,6 @@ fastlane/test_output
 
 # Crash logs
 *.crash
+
+# 自定义资源
+self-resources/

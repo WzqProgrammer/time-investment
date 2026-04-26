@@ -73,15 +73,26 @@ enum ExportService {
         return url
     }
 
-    static func makeMarkdown(records: [TimeRecord], hourlyRate: Double, tone: AdviceTone = .advisor, title: String = "时间投资报告") -> String {
+    static func makeMarkdown(
+        records: [TimeRecord],
+        hourlyRate: Double,
+        tone: AdviceTone = .advisor,
+        title: String = String(localized: "export.title.default")
+    ) -> String {
         var content = ReportService.weeklyReportMarkdown(records: records, hourlyRate: hourlyRate, tone: tone)
-        if title != "时间投资周报" {
-            content = content.replacingOccurrences(of: "时间投资周报", with: title)
+        let weeklyTitle = String(localized: "report.title.weekly")
+        if title != weeklyTitle {
+            content = content.replacingOccurrences(of: weeklyTitle, with: title)
         }
         return content
     }
 
-    static func saveMarkdownToTemp(records: [TimeRecord], hourlyRate: Double, tone: AdviceTone = .advisor, title: String = "时间投资报告") throws -> URL {
+    static func saveMarkdownToTemp(
+        records: [TimeRecord],
+        hourlyRate: Double,
+        tone: AdviceTone = .advisor,
+        title: String = String(localized: "export.title.default")
+    ) throws -> URL {
         let filename = exportFilename(ext: "md")
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
         try makeMarkdown(records: records, hourlyRate: hourlyRate, tone: tone, title: title).write(to: url, atomically: true, encoding: .utf8)

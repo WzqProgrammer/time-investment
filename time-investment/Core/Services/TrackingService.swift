@@ -21,7 +21,7 @@ final class TrackingService {
     func start() {
 #if os(macOS)
         guard AXIsProcessTrusted() else {
-            onError?("未授予辅助功能权限，自动追踪无法启动。")
+            onError?(String(localized: "tracking.error.accessibilityNotGranted"))
             return
         }
 #endif
@@ -111,7 +111,13 @@ final class TrackingService {
         if let error,
            let message = error[NSAppleScript.errorMessage] as? String,
            !message.isEmpty {
-            onError?("AppleScript 执行失败：\(message)")
+            onError?(
+                String(
+                    format: String(localized: "tracking.error.appleScript"),
+                    locale: Locale.current,
+                    message
+                )
+            )
             return nil
         }
         let value = result.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines)

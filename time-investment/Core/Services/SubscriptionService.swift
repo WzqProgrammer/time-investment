@@ -23,7 +23,7 @@ final class LocalSubscriptionService: SubscriptionService {
     }
 }
 
-// StoreKit 接入预留：后续可替换 LocalSubscriptionService
+// StoreKit integration placeholder; can replace LocalSubscriptionService later.
 final class StoreKitSubscriptionService: SubscriptionService {
     func currentTier() -> SubscriptionTier { .free }
     func updateTier(_ tier: SubscriptionTier) {}

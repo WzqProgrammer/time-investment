@@ -1,0 +1,136 @@
+"overview.title" = "今日概览";
+"overview.subtitle" = "AUDIT CYCLE : TODAY";
+"overview.roi.label" = "当日投资回报率 (ROI)";
+"overview.roi.hint" = "您的时间资产效能正在稳步提升，继续维持高价值活动占比。";
+"overview.gauge.caption" = "剩余时间额度";
+"overview.gauge.title" = "时间资产现值";
+
+"analytics.title" = "统计分析";
+"analytics.subtitle" = "基于审计结果的资产效率洞察";
+"analytics.category.title" = "分类 ROI 分布";
+"analytics.category.main" = "主类别";
+"analytics.trend.title" = "7日效能趋势";
+"analytics.export.title" = "数据导出配置";
+"analytics.export.rangeStart" = "起始日期";
+"analytics.export.rangeEnd" = "结束日期";
+"analytics.export.includeAppName" = "应用名";
+"analytics.export.includeURL" = "访问URL";
+"analytics.export.includeNote" = "审计说明";
+"analytics.export.includeSource" = "来源";
+"analytics.export.generate" = "生成审计报告";
+
+"reports.title" = "报告中心";
+"reports.subtitle" = "实时审计你的资产流动性与时间价值产出";
+"reports.search.placeholder" = "搜索审计报告...";
+"reports.filter.all" = "全部";
+"reports.filter.weekly" = "周报";
+"reports.filter.monthly" = "月报";
+"reports.action.createWeekly" = "生成周报";
+"reports.action.createMonthly" = "生成月报";
+"reports.action.openExportFile" = "在系统中打开导出文件";
+"reports.action.open" = "查看";
+"reports.action.export" = "导出";
+"reports.action.delete" = "删除";
+"reports.stats.title" = "报告统计";
+"reports.stats.total" = "总报告数";
+"reports.stats.weekly" = "周报";
+"reports.stats.monthly" = "月报";
+"reports.storage.title" = "存储占比";
+"reports.storage.note" = "按周报数量估算当前占比";
+"reports.storage.weeklyRatio" = "周报占比";
+
+"content.nav.overview" = "今日概览";
+"content.nav.ledger" = "审计账本";
+"content.nav.analytics" = "统计分析";
+"content.nav.reports" = "报告中心";
+"content.nav.subscription" = "订阅中心";
+"content.nav.settings" = "价值设置";
+"content.topbar.search.placeholder" = "搜索审计项目或资产...";
+"content.export.customRange.title" = "时间投资区间报告";
+"content.export.success" = "导出成功：%@";
+"content.export.failure" = "导出失败：%@";
+"content.report.copied" = "已复制报告内容。";
+"content.toolbar.copy" = "复制";
+"content.toolbar.export" = "导出";
+
+"ledger.title" = "审计账本";
+"ledger.subtitle" = "CURRENT AUDIT SESSION";
+"ledger.duration.prefix" = "持续时长：";
+"ledger.category.picker" = "分类";
+"ledger.note.placeholder" = "备注（可选）";
+"ledger.action.addThirtyMinutes" = "新增30分钟记录";
+"ledger.action.startManual" = "开始手动计时";
+"ledger.action.stopAndSave" = "停止并保存";
+
+"subscription.title" = "订阅中心";
+"subscription.subtitle" = "管理方案及报告偏好";
+"subscription.currentPlan" = "当前方案";
+"subscription.plan.picker" = "版本";
+"subscription.plan.free" = "免费版";
+"subscription.plan.pro" = "高级专业版";
+"subscription.tone.label" = "顾问语气";
+"subscription.tone.picker" = "语气";
+"subscription.tone.advisor" = "投资顾问";
+"subscription.tone.coach" = "教练";
+"subscription.tone.neutral" = "中性";
+"subscription.save" = "保存设置";
+
+"settings.title" = "价值设置";
+"settings.subtitle" = "定义你的资产定价策略";
+"settings.pricing.title" = "时间资产定价";
+"settings.pricing.hourlyRatePlaceholder" = "时薪";
+"settings.toggle.autoTrack" = "启用自动追踪";
+"settings.toggle.trackApps" = "应用使用记录";
+"settings.toggle.trackBrowsers" = "网页浏览访问";
+"settings.saveAgreement" = "保存审计协议";
+
+"table.ledger.title" = "审计流水";
+"table.ledger.viewAll" = "查看完整账单";
+"table.column.time" = "审计时间";
+"table.column.category" = "资产类别";
+"table.column.duration" = "时长";
+"table.column.value" = "价值变动";
+
+"common.filter" = "筛选";
+
+"tracking.status.idle" = "自动追踪未启动";
+"tracking.status.running" = "自动追踪运行中";
+"tracking.status.startFailed" = "自动追踪启动失败";
+"tracking.status.stopped" = "自动追踪已停止";
+"tracking.warning.permission" = "请在系统设置中开启辅助功能权限后重试。";
+"tracking.error.startFailedNoPermission" = "自动追踪启动失败：未检测到权限。";
+"tracking.status.manualRunning" = "手动计时中：%@";
+"tracking.note.manual" = "手动计时";
+"tracking.status.manualSaved" = "手动计时已保存";
+"tracking.status.appOnly" = "追踪中：%@";
+"tracking.status.appAndURL" = "追踪中：%@ · %@";
+"tracking.note.autoApp" = "自动追踪：%@";
+"tracking.note.autoAppURL" = "自动追踪：%@ · %@";
+"tracking.error.accessibilityNotGranted" = "未授予辅助功能权限，自动追踪无法启动。";
+"tracking.error.appleScript" = "AppleScript 执行失败：%@";
+
+"report.title.weekly" = "时间投资周报";
+"report.title.monthly" = "时间投资月报";
+"report.metric.totalValue" = "总价值";
+"report.metric.totalHours" = "总时长";
+"report.unit.hours" = "小时";
+"report.section.category" = "分类占比";
+"report.section.advice" = "投资建议";
+"report.advice.highROI" = "你的时间投资回报表现优秀，建议保持当前高价值任务配比。";
+"report.advice.positiveROI" = "当前回报为正，建议把娱乐时段中的 10% 转移到学习或工作任务。";
+"report.advice.negativeROI" = "本期 ROI 为负，建议先优化每日前两小时的任务结构，优先高效率分类。";
+"report.advice.entertainmentHeavy" = "娱乐投入高于学习+工作，建议设置娱乐上限并增加可量化产出的任务。";
+"report.advice.lowRecordedHours" = "有效记录时长较低，建议先稳定记录习惯，再优化 ROI。";
+"report.tonePrefix.advisor" = "- [投资顾问] ";
+"report.tonePrefix.coach" = "- [教练] ";
+"report.tonePrefix.neutral" = "- ";
+
+"export.title.default" = "时间投资报告";
+
+"storage.warning.fallbackToMemory" = "持久化存储加载失败，已降级为临时内存存储，重启后数据可能丢失。";
+"storage.warning.initFailed" = "存储系统初始化失败，当前不可写入数据。";
+
+"menubar.todayValue" = "今日时间价值：¥%.2f";
+"menubar.todayHours" = "今日时长：%.1f 小时";
+"menubar.stopAutoTracking" = "停止自动追踪";
+"menubar.startAutoTracking" = "启动自动追踪";
