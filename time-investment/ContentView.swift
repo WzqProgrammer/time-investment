@@ -200,6 +200,14 @@ struct ContentView: View {
             let isWide = proxy.size.width >= 920
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    if let warning = container.storageWarning {
+                        GroupBox("存储状态") {
+                            Text(warning)
+                                .font(.footnote)
+                                .foregroundStyle(.orange)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
                     if isWide {
                         HStack(alignment: .top, spacing: 16) {
                             VStack(spacing: 16) {

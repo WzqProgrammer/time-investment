@@ -58,23 +58,34 @@ final class CDTimeRecord: NSManagedObject {
 
 final class CoreDataTimeRecordRepository: TimeRecordRepository {
     private let container: NSPersistentContainer
+    private let isStorageReady: Bool
+    private(set) var storageWarningMessage: String?
     private var observers: [UUID: () -> Void] = [:]
 
     init(inMemory: Bool = false) {
         let model = Self.makeModel()
-        container = NSPersistentContainer(name: "TimeInvestmentModel", managedObjectModel: model)
-        if inMemory {
-            container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
-        }
-        container.loadPersistentStores { _, error in
-            if let error {
-                fatalError("Core Data store failed: \(error)")
+        do {
+            container = try Self.buildContainer(model: model, inMemory: inMemory)
+            isStorageReady = true
+            storageWarningMessage = nil
+        } catch {
+            // Avoid app crash at launch. Fallback to in-memory storage if persistent store fails.
+            if let fallback = try? Self.buildContainer(model: model, inMemory: true) {
+                container = fallback
+                isStorageReady = true
+                storageWarningMessage = "持久化存储加载失败，已降级为临时内存存储，重启后数据可能丢失。"
+                print("Core Data store failed, fallback to in-memory: \(error)")
+            } else {
+                container = NSPersistentContainer(name: "TimeInvestmentModel", managedObjectModel: model)
+                isStorageReady = false
+                storageWarningMessage = "存储系统初始化失败，当前不可写入数据。"
+                print("Core Data and fallback store both failed: \(error)")
             }
         }
-        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
     }
 
     func fetchAll() -> [TimeRecord] {
+        guard isStorageReady else { return [] }
         let request = CDTimeRecord.fetchRequestAll()
         request.sortDescriptors = [NSSortDescriptor(key: #keyPath(CDTimeRecord.startTime), ascending: false)]
         guard let objects = try? container.viewContext.fetch(request) else { return [] }
@@ -95,12 +106,14 @@ final class CoreDataTimeRecordRepository: TimeRecordRepository {
     }
 
     func save(_ record: TimeRecord) {
+        guard isStorageReady else { return }
         let object = CDTimeRecord(context: container.viewContext)
         apply(record, to: object)
         persist()
     }
 
     func update(_ record: TimeRecord) {
+        guard isStorageReady else { return }
         let request = CDTimeRecord.fetchRequestAll()
         request.predicate = NSPredicate(format: "id == %@", record.id as CVarArg)
         guard let object = try? container.viewContext.fetch(request).first else { return }
@@ -109,6 +122,7 @@ final class CoreDataTimeRecordRepository: TimeRecordRepository {
     }
 
     func delete(id: UUID) {
+        guard isStorageReady else { return }
         let request = CDTimeRecord.fetchRequestAll()
         request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
         if let object = try? container.viewContext.fetch(request).first {
@@ -177,6 +191,35 @@ final class CoreDataTimeRecordRepository: TimeRecordRepository {
 
         model.entities = [entity]
         return model
+    }
+
+    private static func buildContainer(model: NSManagedObjectModel, inMemory: Bool) throws -> NSPersistentContainer {
+        enum ContainerBuildError: Error {
+            case loadTimedOut
+        }
+
+        let container = NSPersistentContainer(name: "TimeInvestmentModel", managedObjectModel: model)
+        if inMemory {
+            container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
+        }
+
+        let semaphore = DispatchSemaphore(value: 0)
+        var loadError: Error?
+        container.loadPersistentStores { _, error in
+            loadError = error
+            semaphore.signal()
+        }
+
+        let timeout = semaphore.wait(timeout: .now() + 5)
+        if timeout == .timedOut {
+            throw ContainerBuildError.loadTimedOut
+        }
+        if let loadError {
+            throw loadError
+        }
+
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        return container
     }
 }
 

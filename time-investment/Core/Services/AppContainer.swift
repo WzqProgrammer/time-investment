@@ -18,6 +18,7 @@ final class AppContainer: ObservableObject {
     @Published private(set) var records: [TimeRecord] = []
     @Published private(set) var todaySummary = DailySummary(totalSeconds: 0, totalValue: 0, highValueSeconds: 0)
     @Published private(set) var reports: [InvestmentReport] = []
+    @Published private(set) var storageWarning: String?
     @Published private(set) var trackingStatusText: String = "自动追踪未启动"
     @Published private(set) var trackingWarning: String?
     @Published private(set) var trackingActiveSince: Date?
@@ -43,6 +44,11 @@ final class AppContainer: ObservableObject {
         self.subscriptionService = subscriptionService
         self.settings = settingsStore.load()
         self.settings.subscriptionTier = subscriptionService.currentTier()
+        if let coreRepo = repository as? CoreDataTimeRecordRepository {
+            storageWarning = coreRepo.storageWarningMessage
+        } else {
+            storageWarning = nil
+        }
         self.repository.observeChanges { [weak self] in
             Task { @MainActor in
                 self?.reloadRecords()
